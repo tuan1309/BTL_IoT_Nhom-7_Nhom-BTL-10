@@ -1,0 +1,138 @@
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <title>Hệ thống cảnh báo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            padding-top: 56px;
+        }
+        .sidebar {
+            height: 100vh;
+            padding-top: 20px;
+            background-color: #f8f9fa;
+        }
+        .sidebar .nav-link {
+            color: #333;
+        }
+        .sidebar .nav-link.active {
+            font-weight: bold;
+        }
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Hệ thống cảnh báo</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">User Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="login.html">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+            <div class="row">
+                <nav class="col-md-2 d-none d-md-block sidebar">
+                    <div class="position-sticky">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a  class="nav-link active" href="index.html">
+                                    <i class="fas fa-home"></i> Trang chủ
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="history.html">
+                                    <i class="fas fa-history"></i> Lịch sử cảnh báo
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content">
+                    <h1 class="h2">Lịch sử</h1>
+                    <div class="table-responsive">
+                        <table id="history"  class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Thời gian</th>
+                                    <th>Thông báo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>       
+    var firebaseConfig = {
+        apiKey: "AIzaSyDMcZaKWpDpXRNdsVamv1bBOmKVVxkQ8_I",
+        authDomain: "hhethongchongtrom.firebaseapp.com",
+        databaseURL: "https://hhethongchongtrom-default-rtdb.firebaseio.com",
+        projectId: "hhethongchongtrom",
+        storageBucket: "hhethongchongtrom.firebasestorage.app",
+        messagingSenderId: "1084517627549",
+        appId: "1:1084517627549:web:77538af7e6961c0af60674",
+        measurementId: "G-3XG1Y9GRVF"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    $(document).ready(function () {
+        var database = firebase.database();
+        $(document).ready(function() {
+            var database = firebase.database();
+    
+            var cbRef = firebase.database().ref("hethongbaotrom/cb");
+            cbRef.on("value", function(snap) {
+                var cb = snap.val();
+                if (cb == 1) {
+                    // Hiển thị thông báo cảnh báo khi cb = 1
+                    alert("Cảnh báo! Phát hiện chuyển động!");
+                } 
+            });
+        });
+        // Reference to the history data in Firebase
+        var historyRef = database.ref("hethongbaotrom/history");
+        // Listen for new history data
+        historyRef.on("child_added", function (snapshot) {
+            var historyData = snapshot.val();
+            var timestamp = historyData.timestamp;
+            var message = historyData.message;
+            // Append new data to the table
+            var newRow = "<tr><td>" + timestamp + "</td><td>" + message + "</td></tr>";
+            $("#history tbody").prepend(newRow);
+        });
+    });   
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybBogGzOgQpePzW5yC7uB0p6IN5UzL+0B5RxH6A5g8hb5y5xE" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-pZfhhkU5f6p1d5z5r1z5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r5r
+    
